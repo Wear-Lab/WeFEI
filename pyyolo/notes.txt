@@ -1,0 +1,11 @@
+Running tiny still gives a lot of FPS, not sure the exact number
+Should also make sure the bounding boxes are close enough that we can work with it
+
+Finally, should try v4 regular again, now that I shrunk size to 416
+
+
+
+
+export LIB_DARKNET=/home/wearlabucf/Desktop/WeFEI/YOLOv4/libdarknet.so
+python3 test.py
+
