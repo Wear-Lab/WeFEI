@@ -5,6 +5,8 @@ Finally, should try v4 regular again, now that I shrunk size to 416
 
 
 
+NOTE: Must compile v4 to create libdarknet.so, which the following line links to
+Run ./runYolo.sh or use the commands below consecutively:
 
 export LIB_DARKNET=/home/wearlabucf/Desktop/WeFEI/YOLOv4/libdarknet.so
 python3 test.py
