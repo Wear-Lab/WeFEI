@@ -3,3 +3,4 @@ Average FPS with yolov4 = 3.641580348092465 FPS
 Average FPS with yolov4-tiny = 13.537087555394898 FPS
 Average FPS with yolov4-tiny = 13.0811607724524 FPS
 Average FPS with yolov4-tiny = 13.699958647139159 FPS
+Average FPS with yolov4 = 3.603106872494033 FPS
