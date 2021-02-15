@@ -1,0 +1,5 @@
+Jawbone-connection headsets
+3-D bounding boxes
+Depth data averaging over several frames
+Pick out specific object and only highlight/process that
+

@@ -1,5 +1,0 @@
-metawear c++
-
-
-FPS improvements for RealSense (would like above 4 fps)
-Start working on custom C++ program to run this object detection
