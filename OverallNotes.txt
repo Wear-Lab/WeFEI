@@ -1,5 +1,15 @@
 Jawbone-connection headsets
-3-D bounding boxes
 Depth data averaging over several frames
 Pick out specific object and only highlight/process that
 
+
+
+
+3-D bounding boxes:
+(Related)
+https://arxiv.org/pdf/1612.00496.pdf
+https://github.com/smallcorgi/3D-Deepbox
+https://medium.com/swlh/3d-bounding-box-estimation-using-deep-learning-and-geometry-588e2f81f186
+https://github.com/skhadem/3D-BoundingBox
+
+https://arxiv.org/pdf/1909.01867.pdf
