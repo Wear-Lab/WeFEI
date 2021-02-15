@@ -1,2 +1,3 @@
 export LIB_DARKNET=/home/wearlabucf/Desktop/WeFEI/YOLOv4/libdarknet.so
-python3 test.py
+export PYTHONPATH=$PYTHONPATH:/usr/local/lib/python3.6/pyrealsense2
+python3 objectSearch.py

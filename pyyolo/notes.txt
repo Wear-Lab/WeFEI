@@ -1,10 +1,3 @@
-Running tiny still gives a lot of FPS, not sure the exact number
-Should also make sure the bounding boxes are close enough that we can work with it
-
-Finally, should try v4 regular again, now that I shrunk size to 416
-
-
-
 NOTE: Must compile v4 to create libdarknet.so, which the following line links to
 Run ./runYolo.sh or use the commands below consecutively:
 
@@ -14,3 +7,15 @@ python3 test.py
 
 export PYTHONPATH=$PYTHONPATH:/usr/local/lib/python2.7/pyrealsense2
 python depthTest.py
+
+
+RealSense frames: Set as 1280 x 720 px
+PyYOLO frames are 1920 width by 1080 height (px)
+
+1080/480 = 2.25
+1920/848 = 2.2641509434
+
+1080/720 = 1.5
+1920 / 1280 = 1.5
+
+Current issue: video2 is busy when opening feed the second time
