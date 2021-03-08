@@ -8,7 +8,7 @@ MODEL = "yolov4-tiny"
 DATA = "coco"
 FRAME_SCALE_FACTOR = 1.5
 # Temp until we have command recognition
-TARGET_OBJECT = "clock"
+TARGET_OBJECT = "chair"
 
 def main():
 
@@ -63,6 +63,15 @@ def main():
 
 		for i, det in enumerate(dets):
 			print("Detection: " + str(i) + ", " + str(det))
+
+			if det.name != TARGET_OBJECT:
+				continue
+
+			'''
+			TODOS here: Select target object based on how many frames it shows up in one second with high enough confidence
+					From there, take the last frame it was found and calculate depth based on that frame.
+			'''
+
 			xmin, ymin, xmax, ymax = det.to_xyxy()
 			cv2.rectangle(color_image, (xmin, ymin), (xmax, ymax), (0, 0, 255))
 			cv2.putText(color_image, det.name + "," + str(det.prob), (xmin, ymin - 10), cv2.FONT_HERSHEY_SIMPLEX, 1, (107, 168, 50), 1);

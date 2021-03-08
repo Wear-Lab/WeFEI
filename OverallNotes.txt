@@ -1,15 +1,15 @@
 Jawbone-connection headsets
+
 Depth data averaging over several frames
+
 Pick out specific object and only highlight/process that
 
+CURRENT:
+VALIDATE AND FIGURE OUT HOW TO USE IMU DATA
 
 
 
-3-D bounding boxes:
-(Related)
-https://arxiv.org/pdf/1612.00496.pdf
-https://github.com/smallcorgi/3D-Deepbox
-https://medium.com/swlh/3d-bounding-box-estimation-using-deep-learning-and-geometry-588e2f81f186
-https://github.com/skhadem/3D-BoundingBox
+Ray to the object based on our camera dimensions
 
-https://arxiv.org/pdf/1909.01867.pdf
+Access acceleration data and physics kinematics to track motion of camera from origin
+	- Use to test if 3D location was properly calculated

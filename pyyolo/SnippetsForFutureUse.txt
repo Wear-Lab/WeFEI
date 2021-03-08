@@ -1,0 +1,22 @@
+// C code to grab important information about the camera and stream, may be useful in ray calculation
+
+rs2::pipeline pipe;
+rs2::pipeline_profile selection = pipe.start();
+auto depth_stream = selection.get_stream(RS2_STREAM_DEPTH)
+                             .as<rs2::video_stream_profile>();
+auto resolution = std::make_pair(depth_stream.width(), depth_stream.height());
+auto i = depth_stream.get_intrinsics();
+auto principal_point = std::make_pair(i.ppx, i.ppy);
+auto focal_length = std::make_pair(i.fx, i.fy);
+rs2_distortion model = i.model;
+
+
+
+//C code to get field of view
+rs2::pipeline pipe;
+rs2::pipeline_profile selection = pipe.start();
+auto depth_stream = selection.get_stream(RS2_STREAM_DEPTH)
+                             .as<rs2::video_stream_profile>();
+auto i = depth_stream.get_intrinsics();
+float fov[2]; // X, Y fov
+rs2_fov(&i, fov);
