@@ -13,3 +13,7 @@ Ray to the object based on our camera dimensions
 
 Access acceleration data and physics kinematics to track motion of camera from origin
 	- Use to test if 3D location was properly calculated
+
+
+Vf = Vi + a * t
+df = di + Vi * t + .5 * a * t^2

@@ -11,3 +11,18 @@ python depthTest.py
 
 RealSense frames: Set as 1280 x 720 px
 PyYOLO frames are 1920 width by 1080 height (px)
+
+
+
+https://github.com/IntelRealSense/librealsense/blob/master/doc/d435i.md#sensor-origin-and-coordinate-system
+
+https://github.com/IntelRealSense/librealsense/wiki/Projection-in-RealSense-SDK-2.0#point-coordinates
+
+
+
+
+rs2_deproject_pixel_to_point(...)	
+
+Given pixel coordinates and depth in an image with no distortion or inverse distortion coefficients, compute the corresponding point in 3D space relative to the same camera
+
+https://intelrealsense.github.io/librealsense/python_docs/_generated/pyrealsense2.html#module-pyrealsense2
