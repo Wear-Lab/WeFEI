@@ -65,7 +65,7 @@ try:
         rotationAngles[y] += -1 * gyroAngle[y]
         rotationAngles[z] += gyroAngle[x]
 	
-        #combining gyrometer and accelerometer angles according to complementary filter
+        # Combining gyrometer and accelerometer angles according to complementary filter
         rotationAngles[x] = rotationAngles[x] * alpha + accelAngle[x] * (1-alpha)
         rotationAngles[z] = rotationAngles[z] * alpha + accelAngle[z] * (1-alpha)
 
