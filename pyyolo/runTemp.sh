@@ -1,2 +1,2 @@
 export PYTHONPATH=$PYTHONPATH:/usr/local/lib/python3.6/pyrealsense2
-python3 IMU_Test.py
+python3 temp.py

@@ -3,12 +3,13 @@ import numpy as np
 import pyyolo
 import cv2
 import os
+from rotations import bodyToInertialFrame, inertialToBodyFrame
 
 MODEL = "yolov4-tiny"
 DATA = "coco"
 FRAME_SCALE_FACTOR = 1.5
 # Temp until we have command recognition
-TARGET_OBJECT = "chair"
+TARGET_OBJECT = "mouse"
 
 def main():
 
@@ -18,6 +19,10 @@ def main():
 	config.enable_stream(rs.stream.depth, 1280, 720, rs.format.z16, 30)
 	config.enable_stream(rs.stream.color, 1280, 720, rs.format.bgr8, 30)
 	pipeline.start(config)
+
+	profile = pipeline.get_active_profile()
+	depth_profile = rs.video_stream_profile(profile.get_stream(rs.stream.depth))
+	intr = depth_profile.get_intrinsics()
 
 	detector = pyyolo.YOLO("./models/" + MODEL  + ".cfg",
 		"./models/" + MODEL + ".weights",
@@ -37,23 +42,6 @@ def main():
 
 		if not depth_frame or not color_frame:
 			continue
-
-		'''
-		Apply colormap on depth image (image must be converted to 8-bit per pixel first)
-		depth_colormap = cv2.applyColorMap(cv2.convertScaleAbs(depth_image, alpha=0.03), cv2.COLORMAP_JET)
-
-		# If depth and color resolutions are different, resize color image to match depth image for display
-		if depth_colormap_dim != color_colormap_dim:
-		    resized_color_image = cv2.resize(color_image, dsize=(depth_colormap_dim[1], depth_colormap_dim[0]), interpolation=cv2.INTER_AREA)
-		    images = np.hstack((resized_color_image, depth_colormap))
-		else:
-		    images = np.hstack((color_image, depth_colormap))
-
-		# Show images
-		cv2.namedWindow('RealSense', cv2.WINDOW_AUTOSIZE)
-		cv2.imshow('RealSense', images)
-		cv2.waitKey(1)
-		'''
 		
 		# Convert images to numpy arrays
 		depth_image = np.asanyarray(depth_frame.get_data())
@@ -62,7 +50,6 @@ def main():
 		dets = detector.detect(color_image, rgb=False)
 
 		for i, det in enumerate(dets):
-			print("Detection: " + str(i) + ", " + str(det))
 
 			if det.name != TARGET_OBJECT:
 				continue
@@ -114,6 +101,9 @@ def main():
 
 			cv2.circle(color_image, (xcenter, ycenter), 10, (87, 134, 255), 3)
 			cv2.putText(color_image, (str(float_distance) + "m") if found else "Not Available", (xcenter - 20, ycenter - 20), cv2.FONT_HERSHEY_SIMPLEX, 1, (87, 134, 255), 1)
+			point3D = rs.rs2_deproject_pixel_to_point(intr, [xcenter, ycenter], float_distance)
+			print("Body Frame: " + str(point3D))
+			print("Inertial Frame: " + str(bodyToInertialFrame(point3D)))
 
 		cv2.imshow("color_image preview", color_image)
 		if cv2.waitKey(1) == 27:

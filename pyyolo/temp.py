@@ -1,14 +1,16 @@
 import pyrealsense2 as rs
 import numpy as np
+import cv2
+import os
 import math
 from rotations import bodyToInertialFrame, inertialToBodyFrame
+from rotations import bodyToInertialFrame, inertialToBodyFrame
 
-'''
-This works!
-Pitch goes -90 -> 0 -> 90 -> 0 degrees
-Yaw goes infinitely in both directions, so I'm moding by 360 to keep it simple
-Roll goes -180 -> 180 then immediately resets to -180, and the same for the other direction
-'''
+MODEL = "yolov4-tiny"
+DATA = "coco"
+FRAME_SCALE_FACTOR = 1.5
+# Temp until we have command recognition
+TARGET_OBJECT = "mouse"
 
 def initialize_camera():
     # start the frames pipe
@@ -76,16 +78,11 @@ try:
         rotationAngles[x] = rotationAngles[x] * alpha + accelAngle[x] * (1-alpha)
         rotationAngles[z] = rotationAngles[z] * alpha + accelAngle[z] * (1-alpha)
 
-        rotationAngles[x] = rotationAngles[x] % 360
-        rotationAngles[y] = rotationAngles[y] % 360
-        rotationAngles[z] = rotationAngles[z] % 360
-
         counter += 1
         if counter > 50:
             print("rotationAngles (pitch, yaw, roll): (" + str(math.degrees(rotationAngles[x])) + ", " + str(math.degrees(rotationAngles[y])) + ", " + str(math.degrees(rotationAngles[z])) + ")")
-            print("Body Accel (X, Y, Z): (" + str(accel) + ")")
-            inertialAccel = bodyToInertialFrame(rotationAngles, accel)
-            print("Inertial Accel (X, Y, Z): (" + str(inertialAccel) + ")")
+            bodyAccel = inertialToBodyFrame(rotationAngles, accel)
+            print("Body Accel (X, Y, Z): (" + str(bodyAccel) + ")")
             counter = 0
 
 finally:

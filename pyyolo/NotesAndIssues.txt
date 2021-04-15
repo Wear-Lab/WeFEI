@@ -14,15 +14,25 @@ PyYOLO frames are 1920 width by 1080 height (px)
 
 
 
-https://github.com/IntelRealSense/librealsense/blob/master/doc/d435i.md#sensor-origin-and-coordinate-system
+https://github.com/IntelRealSense/librealsense/blob/master/doc/d43s5i.md#sensor-origin-and-coordinate-system
 
 https://github.com/IntelRealSense/librealsense/wiki/Projection-in-RealSense-SDK-2.0#point-coordinates
-
 
 
 
 rs2_deproject_pixel_to_point(...)	
 
 Given pixel coordinates and depth in an image with no distortion or inverse distortion coefficients, compute the corresponding point in 3D space relative to the same camera
+positive x is to the right of the camera, positive y is below the camera, positive z is in front of the camera
 
 https://intelrealsense.github.io/librealsense/python_docs/_generated/pyrealsense2.html#module-pyrealsense2
+
+First rotation with φ about yaw axis (phi)
+Second rotation with theta is pitch about new y axis
+Final rotation is angle ψ about newest x axis (psi)
+
+
+CURRENT TODOS:
+- Drift is SO BAD that acceleration calculations aren't correct even after a few movements of the camera (currently testing 9.81 in the y direction of inertial frame, body frame starts correct but fucks itself up real bad real quick)
+- Seems like the angles don't properly match up with axis or something, since y and z axis on resultant vectors should be swapped
+
