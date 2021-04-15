@@ -3,13 +3,6 @@ import numpy as np
 import math
 from rotations import bodyToInertialFrame, inertialToBodyFrame
 
-'''
-This works!
-Pitch goes -90 -> 0 -> 90 -> 0 degrees
-Yaw goes infinitely in both directions, so I'm moding by 360 to keep it simple
-Roll goes -180 -> 180 then immediately resets to -180, and the same for the other direction
-'''
-
 def initialize_camera():
     # start the frames pipe
     p = rs.pipeline()
@@ -36,16 +29,16 @@ try:
     while True:
         f = p.wait_for_frames()
 
-        #gather IMU data
+        # Gather IMU data from RealSense frames
         accel = f[0].as_motion_frame().get_motion_data()
         gyro = f[1].as_motion_frame().get_motion_data()
-
         ts = f.get_timestamp()
-        # accelerometer calculation
+
+        # Use acceleration data
         accelAngle[x] = math.atan2(accel.x, math.sqrt(accel.y * accel.y + accel.z * accel.z))
         accelAngle[z] = math.atan2(accel.y, accel.z)
 
-        #calculation for the first frame
+        # Calculation for the first frame, where we don't yet have any angles to manipulate
         if (first):
             first = False
             last_ts_gyro = ts
@@ -58,9 +51,9 @@ try:
 
             continue
 
-        #calculation for the second frame onwards
+        # Calculation for the second frame onwards
 
-        # gyrometer calculations
+        # Gyro calculations
         dt_gyro = (ts - last_ts_gyro) / 1000
         last_ts_gyro = ts
 
@@ -72,13 +65,9 @@ try:
         rotationAngles[y] += -1 * gyroAngle[y]
         rotationAngles[z] += gyroAngle[x]
 	
-        #combining gyrometer and accelerometer angles
+        #combining gyrometer and accelerometer angles according to complementary filter
         rotationAngles[x] = rotationAngles[x] * alpha + accelAngle[x] * (1-alpha)
         rotationAngles[z] = rotationAngles[z] * alpha + accelAngle[z] * (1-alpha)
-
-        rotationAngles[x] = rotationAngles[x] % 360
-        rotationAngles[y] = rotationAngles[y] % 360
-        rotationAngles[z] = rotationAngles[z] % 360
 
         counter += 1
         if counter > 50:
