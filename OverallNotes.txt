@@ -17,3 +17,6 @@ Access acceleration data and physics kinematics to track motion of camera from o
 
 Vf = Vi + a * t
 df = di + Vi * t + .5 * a * t^2
+
+
+Dependencies for scikit intsalled, just need to install scikit now and start working

@@ -1,42 +1,52 @@
 import math
 import numpy as np
 
-def bodyToInertialFrame(rotationAngles, point):
-	theta = rotationAngles[0] # θ - pitch
-	phi = rotationAngles[1] # φ - yaw
-	psi = rotationAngles[2] # ψ - roll
+# rotationAngles: [pitch, yaw, roll]
 
-	cosTheta = math.cos(theta)
-	sinTheta = math.sin(theta)
+def bodyToInertialFrame(rotationAngles, point):
+	phi = rotationAngles[0] # φ - x
+	theta = rotationAngles[1] # θ - y
+	psi = rotationAngles[2] # ψ - z
+
 	cosPhi = math.cos(phi)
 	sinPhi = math.sin(phi)
+	cosTheta = math.cos(theta)
+	sinTheta = math.sin(theta)
 	cosPsi = math.cos(psi)
 	sinPsi = math.sin(psi)
 
-	rotationMatrix = np.array([[cosTheta * cosPhi, cosTheta * sinPhi, -1 * sinTheta],
-					[-1 * cosPsi * sinPhi + sinPsi * sinTheta * cosPhi, cosPsi * cosPhi + sinPsi * sinTheta * sinPhi, sinPsi * cosTheta],
-					[sinPsi * sinPhi + cosPsi * sinTheta * cosPhi, -1 * sinPsi * cosPhi + cosPsi * sinTheta * sinPhi, cosPsi * cosTheta]]).transpose()
+	rotationMatrix = np.array([[cosTheta * cosPsi, cosTheta * sinPsi, -1 * sinTheta],
+				[sinPhi * sinTheta * cosPsi - cosPhi * sinPsi, sinPhi * sinTheta * sinPsi + cosPhi * cosPsi, sinPhi * cosTheta],
+				[cosPhi * sinTheta * cosPsi + sinPhi * sinPsi, cosPhi * sinTheta * sinPsi - sinPhi * cosPsi, cosPhi * cosTheta]]).transpose()
 
-	vector = np.asarray([point.x, point.y, point.z])
+	vector = np.array([point.x, point.y, point.z]).transpose()
 
-	return rotationMatrix.dot(vector)
+	return np.matmul(rotationMatrix, vector)
 
 def inertialToBodyFrame(rotationAngles, point):
-	theta = rotationAngles[0] # θ - pitch
-	phi = rotationAngles[1] # φ - yaw
-	psi = rotationAngles[2] # ψ - roll
-	
-	cosTheta = math.cos(theta)
-	sinTheta = math.sin(theta)
+	phi = rotationAngles[0] # φ - x
+	theta = rotationAngles[1] # θ - y
+	psi = rotationAngles[2] # ψ - z
+
 	cosPhi = math.cos(phi)
 	sinPhi = math.sin(phi)
+	cosTheta = math.cos(theta)
+	sinTheta = math.sin(theta)
 	cosPsi = math.cos(psi)
 	sinPsi = math.sin(psi)
 
-	rotationMatrix = rotationMatrix = np.array([[cosTheta * cosPhi, cosTheta * sinPhi, -1 * sinTheta],
-					[-1 * cosPsi * sinPhi + sinPsi * sinTheta * cosPhi, cosPsi * cosPhi + sinPsi * sinTheta * sinPhi, sinPsi * cosTheta],
-					[sinPsi * sinPhi + cosPsi * sinTheta * cosPhi, -1 * sinPsi * cosPhi + cosPsi * sinTheta * sinPhi, cosPsi * cosTheta]])
 
-	vector = np.asarray([0, 9.81, 0])
 
-	return rotationMatrix.dot(vector)
+	rotationMatrix = np.array([[cosTheta * cosPhi, cosTheta * sinPhi, -1 * sinTheta],
+				[sinPsi * sinTheta * cosPhi - cosPsi * sinPhi, sinPsi * sinTheta * sinPhi + cosPsi * cosPhi, cosTheta * sinPsi],
+				[cosPsi * sinTheta * cosPhi + sinPsi * sinPhi, cosPsi * sinTheta * sinPhi - sinPsi * cosPhi, cosTheta * cosPsi]])
+
+
+
+	'''rotationMatrix = np.array([[cosTheta * cosPsi, cosTheta * sinPsi, -1 * sinTheta],
+				[sinPhi * sinTheta * cosPsi - cosPhi * sinPsi, sinPhi * sinTheta * sinPsi + cosPhi * cosPsi, sinPhi * cosTheta],
+				[cosPhi * sinTheta * cosPsi + sinPhi * sinPsi, cosPhi * sinTheta * sinPsi - sinPhi * cosPsi, cosPhi * cosTheta]])'''
+
+	vector = np.array(point).transpose()
+
+	return np.matmul(rotationMatrix, vector)

@@ -4,7 +4,6 @@ import cv2
 import os
 import math
 from rotations import bodyToInertialFrame, inertialToBodyFrame
-from rotations import bodyToInertialFrame, inertialToBodyFrame
 
 MODEL = "yolov4-tiny"
 DATA = "coco"
@@ -16,8 +15,8 @@ def initialize_camera():
     # start the frames pipe
     p = rs.pipeline()
     conf = rs.config()
-    conf.enable_stream(rs.stream.accel)
-    conf.enable_stream(rs.stream.gyro)
+    conf.enable_stream(rs.stream.accel, rs.format.motion_xyz32f, 250)
+    conf.enable_stream(rs.stream.gyro, rs.format.motion_xyz32f, 200)
     prof = p.start(conf)
     return p
 
@@ -54,9 +53,9 @@ try:
 
             accelAngle[y] = math.pi
 
-            rotationAngles[x] = accelAngle[x];
-            rotationAngles[y] = accelAngle[y];
-            rotationAngles[z] = accelAngle[z];
+            rotationAngles[x] = accelAngle[x]
+            rotationAngles[y] = accelAngle[y]
+            rotationAngles[z] = accelAngle[z]
 
             continue
 

@@ -33,6 +33,5 @@ Final rotation is angle ψ about newest x axis (psi)
 
 
 CURRENT TODOS:
-- Drift is SO BAD that acceleration calculations aren't correct even after a few movements of the camera (currently testing 9.81 in the y direction of inertial frame, body frame starts correct but fucks itself up real bad real quick)
-- Seems like the angles don't properly match up with axis or something, since y and z axis on resultant vectors should be swapped
-
+- Try to fix rotations so they are along the right axis
+- scikit-kinematics (try to clean failed pip install then try it out)

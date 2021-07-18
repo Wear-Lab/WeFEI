@@ -102,8 +102,8 @@ def main():
 			cv2.circle(color_image, (xcenter, ycenter), 10, (87, 134, 255), 3)
 			cv2.putText(color_image, (str(float_distance) + "m") if found else "Not Available", (xcenter - 20, ycenter - 20), cv2.FONT_HERSHEY_SIMPLEX, 1, (87, 134, 255), 1)
 			point3D = rs.rs2_deproject_pixel_to_point(intr, [xcenter, ycenter], float_distance)
-			print("Body Frame: " + str(point3D))
-			print("Inertial Frame: " + str(bodyToInertialFrame(point3D)))
+			#print("Body Frame: " + str(point3D))
+			#print("Inertial Frame: " + str(bodyToInertialFrame(point3D)))
 
 		cv2.imshow("color_image preview", color_image)
 		if cv2.waitKey(1) == 27:
