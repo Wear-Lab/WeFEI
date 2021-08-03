@@ -30,20 +30,22 @@ def main():
 			print(f'testData{fileSuffix}.txt taken')
 			fileSuffix+=1
 
+	fp.write('Acc_X,Acc_Y,Acc_Z,Gyr_X,Gyr_Y,Gyr_Z\n')
+
 	try:
 		while prevTS - initialTS <= 10:
 			now = time.time()
 			frameSet = p.wait_for_frames()
-			fp.write(f'[{now:.6f}] ')
+			fp.write(f' ')
 			for i in range(0, frameSet.size()):
 				if frameSet[i].is_motion_frame():
 					frame = frameSet[i].as_motion_frame()
 					if frame.get_profile().stream_type() == rs.stream.accel:
 						accel = frame.get_motion_data() # accel.x/y/z
-						fp.write(f"accel,{accel.x:.6f},{accel.y:.6f},{accel.z:.6f},")
+						fp.write(f"{accel.x:.6f},{accel.y:.6f},{accel.z:.6f},")
 					elif frame.get_profile().stream_type() == rs.stream.gyro:
 						gyro = frame.get_motion_data() # gyro.x/y/z
-						fp.write(f"gyro,{gyro.x:.6f},{gyro.y:.6f},{gyro.z:.6f}\n")
+						fp.write(f"{gyro.x:.6f},{gyro.y:.6f},{gyro.z:.6f}\n")
 			
 			frameCounter += 1
 			prevTS = now

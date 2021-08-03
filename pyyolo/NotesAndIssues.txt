@@ -13,25 +13,15 @@ RealSense frames: Set as 1280 x 720 px
 PyYOLO frames are 1920 width by 1080 height (px)
 
 
-
 https://github.com/IntelRealSense/librealsense/blob/master/doc/d43s5i.md#sensor-origin-and-coordinate-system
 
 https://github.com/IntelRealSense/librealsense/wiki/Projection-in-RealSense-SDK-2.0#point-coordinates
 
 
-
-rs2_deproject_pixel_to_point(...)	
-
-Given pixel coordinates and depth in an image with no distortion or inverse distortion coefficients, compute the corresponding point in 3D space relative to the same camera
-positive x is to the right of the camera, positive y is below the camera, positive z is in front of the camera
-
-https://intelrealsense.github.io/librealsense/python_docs/_generated/pyrealsense2.html#module-pyrealsense2
-
-First rotation with φ about yaw axis (phi)
-Second rotation with theta is pitch about new y axis
-Final rotation is angle ψ about newest x axis (psi)
-
-
-CURRENT TODOS:
-- Try to fix rotations so they are along the right axis
-- scikit-kinematics (try to clean failed pip install then try it out)
+Notes for Karina:
+- My work on various subjects is all over the place because I was trying to get things to work independently before integrating.
+- The object recognition is functional in objectSearch.py,, I would start working here with what you can, integrating the voice library you wrote to interact with the user and set up this function.
+- IMU_Test was used to verify if I could interact with the IMU data from the sensor with Python and to do things with it. That should also be working if you need it.
+- rotations.py was my attempt to get rotation matricies to work so that I could take vectors picked up by the IMU and rotate them into a fixed coordinate frame, but that DOESN'T work.
+  Hence why I am working in testDataGeneration with the scikit-kinematics library instead.
+- temp.py I was using for purely experimental stuff.
