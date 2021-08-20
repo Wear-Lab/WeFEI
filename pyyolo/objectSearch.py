@@ -3,7 +3,6 @@ import numpy as np
 import pyyolo
 import cv2
 import os
-from rotations import bodyToInertialFrame, inertialToBodyFrame
 
 MODEL = "yolov4-tiny"
 DATA = "coco"

@@ -33,7 +33,7 @@ def main():
 	fp.write('Acc_X,Acc_Y,Acc_Z,Gyr_X,Gyr_Y,Gyr_Z\n')
 
 	try:
-		while prevTS - initialTS <= 10:
+		while prevTS - initialTS <= 5:
 			now = time.time()
 			frameSet = p.wait_for_frames()
 			fp.write(f' ')
