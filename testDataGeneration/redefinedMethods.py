@@ -57,11 +57,10 @@ def calcFrameAnalytical(R_initialOrientation=np.eye(3),
     g = constants.g
     # .r_ just makes an array for the dot product to work
     # .inv gets multiplicative inverse of the array
-    # TODO: Is this operation trying to account for gravity, or assume gravity is straight down?
     g0 = np.linalg.inv(R_initialOrientation).dot(np.r_[0,0,g])
-    # TODO: Is this OK? g isn't guaranteed to be straight down based on where the IMU starts which might be a problem.
-    # We can maybe try to use a magnotometer in conjunction with the camera to get more accurate data about starting orientation
-    # Otherwise we'd have to start the camera IMU flat on the table in the precise direction it expects.
+    # What this is doing is orienting the gravity vector with the initial orientation of the IMU.
+    # Either the camera needs to start perfectly horizontal when loading this up,
+    # Or we would need a magnatometer to help determine the original orientation, which it doesn't appear is available?
 
     # For the remaining deviation, assume the shortest rotation to there
     q0 = vector.q_shortest_rotation(accMeasured[0], g0)    
@@ -75,9 +74,9 @@ def calcFrameAnalytical(R_initialOrientation=np.eye(3),
     q = quat.calc_quat(omega, q_ref, rate, 'bf')
 
     # Acceleration, velocity, and position ----------------------------
-    # From q and the measured acceleration, get the \frac{d^2x}{dt^2}
+    # From q and the measured acceleration, get the {d^2x}/{dt^2}
     g_v = np.r_[0, 0, g]
-    # TODO: Is this also OK?
+    # This should be safe as well, given that it's rotating wrt the q orientation quaternion
     accReSensor = accMeasured - vector.rotate_vector(g_v, quat.q_inv(q))
     accReSpace = vector.rotate_vector(accReSensor, q)
 
@@ -101,3 +100,6 @@ def calcFrameAnalytical(R_initialOrientation=np.eye(3),
     return (q, pos, vel)
     # TODO: Find a way to validate if position and orientation work as expected 
     # (orientation in viewer probably, position just by simple eval)
+
+    # TODO: Can we do initial orientation and drift compenstation with some of the code from:
+    # https://dev.intelrealsense.com/docs/rs-motion
