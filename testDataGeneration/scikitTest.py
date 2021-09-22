@@ -1,51 +1,41 @@
-from skinematics.imus import IMU_Base
+from skinematics.imus import IMU_Base, analytical
+from skinematics.quat import convert as convertQuatTo
 from skinematics.view import Orientation_OGL
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 
-# Set the in-file, initial sensor orientation 
-input = r'testData6.txt'
+# Set the in-file, initial sensor orientation
+input = r'testData0.txt'
 
 class RealSenseIMU(IMU_Base):
     def get_data(self, in_data):
         self._set_data(in_data)
 
 if __name__ == '__main__':
-    data = pd.read_csv(input, sep=',', index_col=False)
-    acc_array = data.filter(regex="Acc").values
-    omega_array = data.filter(regex="Gyr").values
-    quat_array = []
-    index = 0
+    csv_data = pd.read_csv(input, sep=',', index_col=False)
+    acc_array = csv_data.filter(regex="Acc").values
+    omega_array = csv_data.filter(regex="Gyr").values
 
-    print(acc_array)
-    print(omega_array)
-    
-    # Read the data
     data = {
         'rate': 400,
-        'acc': acc_array,
-        'omega': omega_array
+        'acc': acc_array[:len(acc_array)//2],
+        'omega': omega_array[:len(omega_array)//2]
     }
 
     head_sensor = RealSenseIMU(in_data=data)
-    quat_array.append(head_sensor.quat)
-    '''
-        index += 1
-        # acc_array.__len__
-        while(index < 10):
-            data = {
-                'acc': acc_array[index],
-                'omega': omega_array[index]
-            }
-
-            index += 1
-            head_sensor._set_data(data)
-            print(head_sensor.quat)
-            quat_array.append(head_sensor.quat)
-    '''
-    print(quat_array)
     viewer = Orientation_OGL(quat_in=head_sensor.quat)
-    viewer.run(looping=False, rate=1000)
-    
-    print('Done')
+    viewer.run(looping=False, rate=5000)
+
+    data = {
+        'rate': 400,
+        'acc': acc_array[len(acc_array)//2:],
+        'omega': omega_array[len(omega_array)//2:]
+    }
+
+    q, pos, vel = analytical(convertQuatTo(head_sensor.quat, 'rotmat'), data['omega'], head_sensor.pos, data['acc'], data['rate'])
+    head_sensor.quat = q
+    head_sensor.pos = pos
+
+    viewer = Orientation_OGL(quat_in=head_sensor.quat)
+    viewer.run(looping=False, rate=5000)

@@ -1,11 +1,6 @@
-Must give a matrix [[],...] for the data of accel/omega
-
-Next experiment: If I split the data in half, can I call get_data again with a dataset that is a continuation of the previous
-and have the orientation be sustained between the two sets?
-
-This would mean that I could throw a single frame (possibly skipping a fixed number in between if it's too much computation) 
-in a matrix [[]] and have it calculate the current orientation, then manually call get_data with the next frame matrix
-
-In that case, What does sensor.quat look like? Do we just always take the last list of that matrix?
-
-TEST
+TODOS for week of 9/20
+- Research what those gravity calculations are and if they're safe
+    - Might also be able to ask Surendar or someone knowledgable
+    - Could also just try it and see if it works
+- Convert function inputs and outputs to a single value if possible, or an array with a single value if not
+- Store orientation and frame data in the main class and recycle these values for each new frame to the function
