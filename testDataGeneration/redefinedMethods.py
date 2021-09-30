@@ -1,108 +1,59 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy import constants     # for "g"
-from scipy.integrate import cumtrapz
+from scipy.integrate import cumulative_trapezoid
 from skinematics import quat, vector, rotmat
-
-def calcOrientation(imu):
-    # TODO: Remove and use the below method directly once fixed. This is just to demo what gets passed in.
-    initialPosition = np.r_[0,0,0]
-    (quaternion, position, velocity) = calcFrameAnalytical(imu.R_init, imu.omega, initialPosition, imu.acc, imu.rate)
-    imu.quat = quaternion
 
 # TODO: Can we just pass in one instance of each data instead of a list for omega and accMeasured (rate can be constant or 
 # we can measure a new rate every frame depending on how long since the last frame)
-def calcFrameAnalytical(prevq=np.zeros(4), # Previous orientation value
-               currOmega=np.zeros(3), # 2D array where there are 5 arrays of 3 zeros
-               initialPosition=np.zeros(3), # 1D array of 3 zeros
-               accMeasured=np.column_stack((np.zeros((5,2)), 9.81*np.ones(5))), # 2D array with 5 arrays of 3 zeros, last column all 9.81
-               rate=100):
-    ''' Reconstruct position and orientation with an analytical solution,
-    from angular velocity and linear acceleration.
-    Assumes a start in a stationary position. No compensation for drift.
-    Parameters
-    ----------
-    R_initialOrientation: ndarray(3,3)
-        Rotation matrix describing the initial orientation of the sensor,
-        except a mis-orienation with respect to gravity
-    omega : ndarray(N,3)
-        Angular velocity, in [rad/s]
-    initialPosition : ndarray(3,)
-        initial Position, in [m]
-    accMeasured : ndarray(N,3)
-        Linear acceleration, in [m/s^2]
-    rate : float
-        sampling rate, in [Hz]
-    Returns
-    -------
-    q : ndarray(N,3)
-        Orientation, expressed as a quaternion vector
-    pos : ndarray(N,3)
-        Position in space [m]
-    vel : ndarray(N,3)
-        Velocity in space [m/s]
-    Example
-    -------
-     
-    >>> q1, pos1 = analytical(R_initialOrientation, omega, initialPosition, acc, rate)
-    '''
-
+def calcFrameAnalytical(
+               qref,
+               currOmega,
+               currAccel,
+               prevq,
+               prevPosition,
+               prevVelo,
+               rate=400):
     # Calculation ingores whatever the last omega list is in the 2D array,
     # so we make a dummy omega to make sure our current frame omega is used right
     omega = np.array([currOmega, [0, 0, 0]])
 
-    g = constants.g
-    g_v = np.r_[0, 0, g]
+    # Our camera orients itself such that the positive z axis faces out the front of the lens, 
+    # the positive y axis points down, and the positive x axis points right
+
+    # Therefore, our standard gravity vector according to this frame is +y
+    g_v = np.r_[0, constants.g, 0]
     
     # Calculate orientation q by "integrating" omega -----------------
-    q = quat.calc_quat(omega, prevq, rate, 'bf')[1]
-    # Return of calc_quat is: [q0_unit, q1] where q is a np array of length 4
+    nextq = quat.calc_quat(omega, prevq, rate, 'bf')[1]
+    # Return of calc_quat is: [prevq_unit, q1] where q is a np array of length 4
     # We get the new q value from q1
 
     # Acceleration, velocity, and position ----------------------------
     # From q and the measured acceleration, get the {d^2x}/{dt^2}
-    # This should be safe as well, given that it's rotating wrt the q orientation quaternion
-    accReSensor = accMeasured - vector.rotate_vector(g_v, quat.q_inv(q))
-    accReSpace = vector.rotate_vector(accReSensor, q)
+    accReSensor = currAccel - vector.rotate_vector(g_v, quat.q_inv(nextq))
+    accReSpace = vector.rotate_vector(accReSensor, nextq)
 
-    # Make the first position the reference position
-    # multiplies each q by the q_inv of the first calculated q (not q0)
-    '''
-    TODO: This multiples all quats by inv of q0
-    [[0.5        0.5        0.5        0.5       ]
-    [0.49624532 0.50124531 0.50124531 0.50124531]
-    [0.49059589 0.50309564 0.50309564 0.50309564]
-    [0.48113428 0.50613233 0.50613233 0.50613233]]
-    ...BECOMES...
-    [[1.         0.         0.         0.        ]
-    [0.99999063 0.00249999 0.00249999 0.00249999]
-    [0.99994141 0.00624988 0.00624988 0.00624988]
-    [0.99976563 0.01249902 0.01249902 0.01249902]]
-    
-    TODO: is this actually just orienting all quaternions with respect to the initial quat?
-    Is this necessary? If so we can just pass the first quaternion to the method over and over
-    If not though that would be better
-    '''
-    q = quat.q_mult(q, quat.q_inv(q[0]))
-
-    # compensate for drift - commented out in original source
-    # TODO: Try this once we think the code is working
-    # drift = np.mean(accReSpace, 0)
-    # accReSpace -= drift*0.7
-
-    # OR: Can we do initial orientation and drift compenstation with some of the code from:
-    # https://dev.intelrealsense.com/docs/rs-motion
+    # Make the first position the reference position for this quat
+    # TODO: How are we going to keep the calculations using the values before they are aligned to the reference here?
+    adjustedq = quat.q_mult(nextq, quat.q_inv(qref))
 
     # Position and Velocity through integration, assuming 0-velocity at t=0
-    # TODO: How do we convert this to one frame at a time instead of a list?
     vel = np.nan*np.ones_like(accReSpace)
     pos = np.nan*np.ones_like(accReSpace)
 
+    # This is the part more than anything else that I don't think is going to work
     for ii in range(accReSpace.shape[1]):
-        vel[:,ii] = cumtrapz(accReSpace[:,ii], dx=1./rate, initial=0)
-        pos[:,ii] = cumtrapz(vel[:,ii], dx=1./rate, initial=initialPosition[ii])
+        vel[ii] = cumulative_trapezoid(accReSpace[ii], dx=1./rate, initial=prevVelo)
+        pos[ii] = cumulative_trapezoid(vel[ii], dx=1./rate, initial=prevPosition[ii])
 
-    return (q, pos, vel)
+    # Next q used for calculating things
+    # adjustdq is what gets stored and used as our output quaternion in the display
+        # I'm still not convinced we need it for anything though?
+    # Pos and vel are next readings of each
+    return (nextq, adjustedq, pos, vel)
+
+
     # TODO: Find a way to validate if position and orientation work as expected 
     # (orientation in viewer probably, position just by simple eval)
     # Use a list to load up a preset path, then pass things in one  by one and log the quats and pos/vel into separate lists
@@ -112,7 +63,7 @@ def calcFrameAnalytical(prevq=np.zeros(4), # Previous orientation value
 
 
 def getInitials(R_initialOrientation=np.eye(3),
-               initialAcc=np.r_[0, 0, constants.g]):
+               initialAcc=np.r_[0, constants.g, 0]):
     # Transform recordings to angVel/acceleration in space --------------
 
     # Orientation of \vec{g} with the sensor in the "R_initialOrientation"
@@ -134,4 +85,4 @@ def getInitials(R_initialOrientation=np.eye(3),
     # is very important!
     q_ref = quat.q_mult(q_initial, q0)
 
-    return (q0, q_ref)
+    return q_ref
