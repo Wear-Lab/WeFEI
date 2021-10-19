@@ -1,0 +1,9 @@
+*.weights
+runIMUTest.sh
+runTemp.sh
+runObjectSearch.sh
+runGenerator.sh
+YOLOv4/*
+
+!YOLOv4/MakefileFormat.txt
+!YOLOv4/

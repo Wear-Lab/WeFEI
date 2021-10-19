@@ -1,0 +1,27 @@
+NOTE: Must compile v4 to create libdarknet.so, which the following line links to
+Run ./runYolo.sh or use the commands below consecutively:
+
+export LIB_DARKNET=/home/wearlabucf/Desktop/WeFEI/YOLOv4/libdarknet.so
+python3 test.py
+
+
+export PYTHONPATH=$PYTHONPATH:/usr/local/lib/python2.7/pyrealsense2
+python depthTest.py
+
+
+RealSense frames: Set as 1280 x 720 px
+PyYOLO frames are 1920 width by 1080 height (px)
+
+
+https://github.com/IntelRealSense/librealsense/blob/master/doc/d43s5i.md#sensor-origin-and-coordinate-system
+
+https://github.com/IntelRealSense/librealsense/wiki/Projection-in-RealSense-SDK-2.0#point-coordinates
+
+
+Notes for Karina:
+- My work on various subjects is all over the place because I was trying to get things to work independently before integrating.
+- The object recognition is functional in objectSearch.py,, I would start working here with what you can, integrating the voice library you wrote to interact with the user and set up this function.
+- IMU_Test was used to verify if I could interact with the IMU data from the sensor with Python and to do things with it. That should also be working if you need it.
+- rotations.py was my attempt to get rotation matricies to work so that I could take vectors picked up by the IMU and rotate them into a fixed coordinate frame, but that DOESN'T work.
+  Hence why I am working in testDataGeneration with the scikit-kinematics library instead.
+- temp.py I was using for purely experimental stuff.

@@ -1,0 +1,11 @@
+TODOS for week of 9/20
+- Research what those gravity calculations are and if they're safe
+    - Might also be able to ask Surendar or someone knowledgable
+    - Could also just try it and see if it works
+- Convert function inputs and outputs to a single value if possible, or an array with a single value if not
+- Store orientation and frame data in the main class and recycle these values for each new frame to the function
+
+
+Next steps:
+- Fix main analytical function to take singular inputs and perform one value computations
+- Is it work trying to redo some of the calculation methods too so that we can skip on lists entirely?

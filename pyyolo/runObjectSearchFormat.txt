@@ -1,0 +1,5 @@
+export LIB_DARKNET=/home/wearlabucf/Desktop/WeFEI/YOLOv4/libdarknet.so
+export PYTHONPATH=$PYTHONPATH:/usr/local/lib/python3.6/pyrealsense2
+python3 objectSearch.py
+
+MAKE SURE TO REPLACE PATHS FOR THE SPECIFIC DEVICE
