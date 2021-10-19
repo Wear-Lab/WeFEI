@@ -1,4 +1,5 @@
 *.weights
+token.txt
 runIMUTest.sh
 runTemp.sh
 runObjectSearch.sh
