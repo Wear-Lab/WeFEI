@@ -1,7 +1,7 @@
+from os import posix_fallocate
 import numpy as np
-import matplotlib.pyplot as plt
-from scipy import constants     # for "g"
-from scipy.integrate import cumulative_trapezoid
+from scipy import constants
+from scipy import integrate
 from skinematics import quat, vector, rotmat
 
 # TODO: Can we just pass in one instance of each data instead of a list for omega and accMeasured (rate can be constant or 
@@ -22,7 +22,7 @@ def calcFrameAnalytical(
     # the positive y axis points down, and the positive x axis points right
 
     # Therefore, our standard gravity vector according to this frame is +y
-    g_v = np.r_[0, constants.g, 0]
+    g_v = np.r_[0, 0, constants.g]
     
     # Calculate orientation q by "integrating" omega -----------------
     nextq = quat.calc_quat(omega, prevq, rate, 'bf')[1]
@@ -42,10 +42,19 @@ def calcFrameAnalytical(
     vel = np.nan*np.ones_like(accReSpace)
     pos = np.nan*np.ones_like(accReSpace)
 
+    # print("------------")
+    # print(accReSpace)
+    # print(vel)
+    # print("------------")
+
     # This is the part more than anything else that I don't think is going to work
-    for ii in range(accReSpace.shape[1]):
-        vel[ii] = cumulative_trapezoid(accReSpace[ii], dx=1./rate, initial=prevVelo)
-        pos[ii] = cumulative_trapezoid(vel[ii], dx=1./rate, initial=prevPosition[ii])
+    # print(accReSpace)
+    for i in range(0, 3):
+        vel[i] = integrate.cumtrapz([prevVelo[i], accReSpace[i]], dx=1./rate)[0]
+        pos[i] = integrate.cumtrapz([prevPosition[i], vel[i]], dx=1./rate)[0]
+
+    # print(prevVelo,"->",vel)
+    # print(prevPosition,"->",pos)
 
     # Next q used for calculating things
     # adjustdq is what gets stored and used as our output quaternion in the display
